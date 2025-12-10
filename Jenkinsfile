@@ -1,10 +1,7 @@
 pipeline {
     agent any
 
-
-
     stages {
-
         stage('Hello') {
             steps {
                 echo 'Hello world depuis Jenkinsfile !'
@@ -28,18 +25,19 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
+                    // credentialsId must match the Secret Text you added in Jenkins credentials
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
                         sh '''
                             mvn sonar:sonar \
-                            -Dsonar.login=$SONAR_TOKEN \
-                            -Dmaven.test.skip=true
+                              -Dsonar.token=$SONAR_TOKEN \
+                              -Dsonar.host.url=http://localhost:9000 \
+                              -Dsonar.projectKey=tn.esprit.spring.services:timesheet-devops \
+                              -Dmaven.test.skip=true
                         '''
                     }
                 }
             }
         }
-
-
     }
 
     post {
